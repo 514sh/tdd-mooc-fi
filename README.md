@@ -3,7 +3,7 @@
 ##### Presented by University of Helsinki
 - [See course page](https://tdd.mooc.fi/)
 ---
-###### Exercises
+#### Exercises
 ---
 [**Exercise 1: Small, safe, steps**](./part1/tdd-mooc-small-steps-main/)
 This is a refactoring exercise to practise doing small, safe steps.
