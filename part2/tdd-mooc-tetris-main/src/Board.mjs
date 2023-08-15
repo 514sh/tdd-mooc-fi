@@ -9,7 +9,7 @@ export class Board {
     this.block = "."
     this.xPlace = 0
     this.yPlace = 1
-    this.bHasFalling = false
+    this.boardHasFalling = false
     this.count = 0
   }
 
@@ -25,10 +25,10 @@ export class Board {
   }
 
   drop(block){
-    if (!this.bHasFalling){
+    if (!this.boardHasFalling){
       this.board[this.xPlace][this.yPlace] = block
       this.block = block
-      this.bHasFalling = true
+      this.boardHasFalling = true
     }else{
       throw 'already falling'
     }
@@ -36,18 +36,18 @@ export class Board {
   }
 
   tick(){
-    if (this.bHasFalling && this.xPlace < this.height - (1 + this.count)){
+    if (this.boardHasFalling && this.xPlace < this.height - (1 + this.count)){
       this.board[this.xPlace][this.yPlace] = "."
       this.xPlace += 1
       this.board[this.xPlace][this.yPlace] = this.block
     }else{
-      this.bHasFalling = false
+      this.boardHasFalling = false
       this.count += 1
       this.xPlace = 0
     }
   }
 
   hasFalling(){
-    return this.bHasFalling
+    return this.boardHasFalling
   }
 }

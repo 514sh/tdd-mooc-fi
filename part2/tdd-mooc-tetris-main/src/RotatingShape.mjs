@@ -1,64 +1,45 @@
+import { shapeToStr, transpose, flipColumn } from "./shapes.mjs"
+
 export class RotatingShape{
+  #shape
+
   constructor(shape){
-    this.shape = shape
-
-    let shapeArrRow = this.shape.split("\n")
-    this.shapeArr = shapeArrRow.map(row => row.trim().split(''))
-  }
-
-  strToArrShape(shape){
-    let shapeArrRow = shape.split("\n")
-    return shapeArrRow.map(row => row.trim().split(''))
-  }
-
-  transpose(shape){
-    const dimension = shape.length
-    const newShape = Array.from({length: dimension}, () => Array(dimension).fill(""))
-    for(let i = 0; i < dimension; i++){
-      for(let j = 0; j < dimension; j++ ){
-        newShape[i][j] = shape[j][i]
-      }
+    if (typeof shape === "string"){
+      this.#shape = shape
+        .replaceAll(" ", "")
+        .trim()
+        .split("\n")
+        .map(row => row.split(""))
+    }else{
+      this.#shape = shape
     }
-    return newShape
   }
 
-  flipCol(shape){
-    const dimension = shape.length
-    const newShape = Array.from({length: dimension}, () => Array(dimension).fill(""))
+  columns(){
+    return this.#shape[0].length
+  }
 
-    for(let i = 0; i < dimension; i++){
-      for(let j = 0, k = dimension - 1; j < dimension; j++, k-- ){
-        newShape[i][j] = shape[i][k]
-      }
-    }
-    return newShape
+  rows(){
+    return this.#shape.length
+  }
+
+  blockAt(row,col){
+    return this.#shape[row][col]
   }
 
   rotateRight(){
-    const shapeArr = this.strToArrShape(this.shape)
-    let transposed = this.transpose(shapeArr)
-    let newShape = this.flipCol(transposed)
-    this.shapeArr = [...newShape]
-    return this
+    const transposed = transpose(this.#shape)
+    const rotated = flipColumn(transposed)
+    return new RotatingShape(rotated)
   }
 
   rotateLeft(){
-    const shapeArr = this.strToArrShape(this.shape)
-    let flipped = this.flipCol(shapeArr)
-    let newShape = this.transpose(flipped)
-    this.shapeArr = [...newShape]
-    return this
+    const flipped = flipColumn(this.#shape)
+    const rotated = transpose(flipped)
+    return new RotatingShape(rotated)
   }
 
   toString(){
-    const dimension = this.shapeArr.length
-    let str=""
-    for(let i = 0; i < dimension; i++){
-      for(let j = 0; j < dimension; j++){
-        str += this.shapeArr[i][j]
-      }
-      str += "\n"
-    }
-    return str
+    return shapeToStr(this)
   }
 }
