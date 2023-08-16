@@ -47,12 +47,24 @@ export class Tetromino{
     return this.#orientations[this.#currentOrientation];
   }
 
+  height(){
+    return this.#shape().height()
+  }
+
+  width(){
+    return this.#shape().width()
+  }
+
   rotateRight(){
     return new Tetromino(this.#currentOrientation + 1, this.#orientations)
   }
 
   rotateLeft(){
     return new Tetromino(this.#currentOrientation - 1, this.#orientations)
+  }
+
+  blockAt(row, col) {
+    return this.#shape().blockAt(row, col);
   }
 
   toString(){

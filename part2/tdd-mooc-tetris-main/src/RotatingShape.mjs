@@ -15,11 +15,11 @@ export class RotatingShape{
     }
   }
 
-  columns(){
+  width(){
     return this.#shape[0].length
   }
 
-  rows(){
+  height(){
     return this.#shape.length
   }
 

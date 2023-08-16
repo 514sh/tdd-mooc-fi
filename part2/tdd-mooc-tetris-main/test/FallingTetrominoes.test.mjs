@@ -1,4 +1,4 @@
-/*
+
 import { expect } from "chai";
 import { Board } from "../src/Board.mjs";
 import { Tetromino } from "../src/Tetromino.mjs";
@@ -28,10 +28,10 @@ describe("Falling tetrominoes", () => {
     );
   });
 
-  xit("stop when they hit the bottom", () => {
+  it("stop when they hit the bottom", () => {
     board.drop(Tetromino.T_SHAPE);
     fallToBottom(board);
-
+    console.log(board.toString())
     expect(board.toString()).to.equalShape(
       `..........
        ..........
@@ -42,7 +42,7 @@ describe("Falling tetrominoes", () => {
     );
   });
 
-  xit("stop when they land on another block", () => {
+  it("stop when they land on another block", () => {
     board.drop(Tetromino.T_SHAPE);
     fallToBottom(board);
     board.drop(Tetromino.T_SHAPE);
@@ -58,4 +58,3 @@ describe("Falling tetrominoes", () => {
     );
   });
 });
-*/
