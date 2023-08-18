@@ -3,8 +3,7 @@ import { shapeToStr, createBlankArray} from "./shapes.mjs"
 const EMPTY = "."
 
 class Point{
-  constructor(type ,row, col){
-    this.type = type
+  constructor(row, col){
     this.row = row
     this.col = col
   }
@@ -32,29 +31,31 @@ class MovableBlock{
     return this.#shape
   }
 
-  lastCol(){
-    return this.#col + this.#shape.width()
-  }
-
-  lastRow(){
-    return this.#row + this.#shape.height()
-  }
-
   nonEmptyBlocks(){
     let points = []
-    let boardRow = this.#row
-    let shapeRow = 0
-    for(boardRow, shapeRow; shapeRow < this.#shape.height(); boardRow++, shapeRow++){
-      let boardCol = this.#col
-      let shapeCol = 0
-      for(boardCol, shapeCol; shapeCol < this.#shape.width(); boardCol++, shapeCol++){
-        if (this.#shape.blockAt(shapeRow, shapeCol) !== EMPTY ){
-          let type = this.#shape.blockAt(shapeRow, shapeCol)
-          points.push(new Point(type, boardRow, boardCol))
+    for (let row = this.#row; row < this.#row + this.#shape.height(); row++){
+      for (let col = this.#col; col < this.#col + this.#shape.width(); col++){
+        const block = this.blockAt(row, col)
+        if (block !== EMPTY){
+          points.push (new Point(row,col))
         }
       }
     }
     return points
+  }
+
+  blockAt(row, col){
+    if (
+      row >= this.#row &&
+      row < this.#row + this.#shape.height() &&
+      col >= this.#col &&
+      col < this.#col + this.#shape.width()
+    ) {
+      return this.#shape.blockAt(row - this.#row, col - this.#col)
+    }else{
+      return EMPTY
+    }
+    
   }
 
   moveDown(){
@@ -69,6 +70,13 @@ class MovableBlock{
     return new MovableBlock(this.#shape, this.#row, this.#col - 1)
   }
 
+  rotateRight(){
+    return new MovableBlock(this.#shape.rotateRight(), this.#row, this.#col)
+  }
+
+  rotateLeft(){
+    return new MovableBlock(this.#shape.rotateLeft(), this.#row, this.#col)
+  }
 }
 
 export class Board{
@@ -83,152 +91,6 @@ export class Board{
     this.#fallingObject = null
   }
 
-  blockAt(row, col){
-    return this.#board[row][col]
-  }
-
-  drop(shape){
-    if(typeof shape === "string"){
-      return
-    }else{
-      const startCol = Math.floor(this.#width/2) - Math.floor(shape.width()/2) - 1
-      const initializeBlock = new MovableBlock(shape, 0, startCol)
-      this.#fallingObject = initializeBlock
-      const points = this.#fallingObject.nonEmptyBlocks()
-      this.drawBlockInBoard(points)
-    }
-  }
-
-  clearBlockInBoard(points){
-    points.map( point => {
-      if (this.#board[point.row][point.col] !== EMPTY){
-        this.#board[point.row][point.col] = EMPTY
-      }
-    })    
-  }
-
-  drawBlockInBoard(points){
-    points.map( point => {
-      if (this.#board[point.row][point.col] === EMPTY){ 
-        this.#board[point.row][point.col] = point.type
-      }
-    })    
-  }
-
-  tick(){
-    if(!this.hasFalling()){
-      return
-    }
-
-    let attempt = this.#fallingObject.moveDown()
-    if (this.hitsFloor(attempt) || this.hitsBlock(attempt)){
-      this.#fallingObject = null
-    }else{
-      this.move(this.#fallingObject.moveDown())
-    }
-  }
-
-  hitsFloor(attempt){
-    for (const points of attempt.nonEmptyBlocks()){
-      if (points.row >= this.height()){
-        return true
-      }
-    }
-    return false
-  }
-
-  move(move){
-    let pointsBefore = this.#fallingObject.nonEmptyBlocks()
-    this.clearBlockInBoard(pointsBefore)
-    this.#fallingObject = move
-    let pointsAfter = this.#fallingObject.nonEmptyBlocks()
-    this.drawBlockInBoard(pointsAfter)
-  }
-
-  moveDown(){
-    if(!this.hasFalling()){
-      return
-    }
-    for (let i = 0; i < this.height(); i++){
-      let attempt = this.#fallingObject.moveDown()
-      if (this.hitsFloor(attempt) || this.hitsBlock(attempt)){
-        this.#fallingObject = null
-        return
-      }else{
-        this.move(this.#fallingObject.moveDown())
-      }
-    }
-  }
-
-  moveRight(){
-    if(!this.hasFalling()){
-      return
-    }
-
-    let attempt = this.#fallingObject.moveRight()
-    
-    if (this.hitsWall(attempt)){
-      this.#fallingObject = null
-      return
-    }else if(this.hitsRightBlock(attempt)){
-      return
-    }
-    else{
-      this.move(this.#fallingObject.moveRight())
-    }
-  }
-
-  moveLeft(){
-    if(!this.hasFalling()){
-      return
-    }
-
-    let attempt = this.#fallingObject.moveLeft()
-    if (this.hitsWall(attempt)){
-      this.#fallingObject = null
-      return
-    }else if(this.hitsLeftBlock(attempt)){
-      return
-    }else{
-      this.move(this.#fallingObject.moveLeft())
-    }
-  }
-
-  hitsBlock(attempt){
-    for(let col = attempt.col(); col < attempt.lastCol(); col++){
-      if((attempt.row() + 1) === this.height()){
-        return true
-      }
-      if (this.#board[attempt.row() +1][col] !== EMPTY){
-        return true
-      }
-    }
-    return false
-  }
-
-  hitsRightBlock(attempt){
-    for(let row = attempt.row(); row < attempt.lastRow(); row++){
-      if (this.#board[row][attempt.lastCol() -1] !== EMPTY){
-        return true
-      }
-    }
-    return false
-  }
-
-  hitsLeftBlock(attempt){
-    for(let row = attempt.row(); row < attempt.lastRow(); row++){
-      if (this.#board[row][attempt.col()] !== EMPTY){
-        return true
-      }
-    }
-    return false
-  }
-
-
-  hasFalling(){
-    return this.#fallingObject !== null
-  }
-
   height(){
     return this.#height
   }
@@ -237,16 +99,162 @@ export class Board{
     return this.#width
   }
 
-  toString(){
-    return shapeToStr(this)
+  nonEmptyBlocks(){
+    return this.#fallingObject.nonEmptyBlocks()
   }
 
-  hitsWall(attempt){
-    for (const points of attempt.nonEmptyBlocks()){
-      if (points.col >= this.width() || points.col < 0){
+  blockAt(row, col){
+    if (this.#fallingObject){
+      const block = this.#fallingObject.blockAt(row, col)
+      if (block !== EMPTY)
+      return block
+    }
+    return this.#board[row][col]
+  }
+
+  drop(piece){
+    if (typeof piece === "string") {
+      return
+    }
+    if (this.#fallingObject) {
+      throw new Error("another piece is already falling")
+    }
+    this.#fallingObject = new MovableBlock(
+      piece,
+      0,
+      Math.floor((this.#width - piece.width()) / 2)
+    )
+  }
+  
+  tick(){
+    if (!this.#fallingObject){
+      return
+    }
+
+    const attempt = this.#fallingObject.moveDown()
+    if(this.hitsFloor(attempt) || this.hitsBlock(attempt)){
+      this.stopFalling()
+    }else{
+      this.#fallingObject = this.#fallingObject.moveDown()
+    }
+  }
+
+  moveRight(){
+    if(!this.#fallingObject){
+      return
+    }
+
+    const attempt = this.#fallingObject.moveRight()
+
+    if(this.hitsWall(attempt) || this.hitsBlock(attempt)){
+      return
+    }else{
+      this.#fallingObject = this.#fallingObject.moveRight()
+    }
+  }
+
+  moveLeft(){
+    if(!this.#fallingObject){
+      return
+    }
+    const attempt = this.#fallingObject.moveLeft()
+    if(this.hitsWall(attempt) || this.hitsBlock(attempt)){
+      return
+    }else{
+      this.#fallingObject = this.#fallingObject.moveLeft()
+    }
+  }
+
+  moveDown(){
+    while(this.#fallingObject){
+      this.tick()
+    }
+  }
+
+  rotateRight(){
+    if (!this.hasFalling()){
+      return
+    }
+
+    const attempt = this.#fallingObject.rotateRight()
+    if (this.hitsWall(attempt) || this.hitsBlock(attempt)){
+      let attemptLeft = this.#fallingObject.moveLeft().rotateRight()
+      let attemptRight = this.#fallingObject.moveRight().rotateRight()
+
+      if(!this.hitsWall(attemptLeft) && !this.hitsBlock(attemptLeft))
+        this.#fallingObject = attemptLeft
+      else if(!this.hitsWall(attemptRight) && !this.hitsBlock(attemptRight))
+        this.#fallingObject = attemptRight
+      else
+        return
+
+    }else{
+      this.#fallingObject = attempt
+    }
+  }
+
+  rotateLeft(){
+    if (!this.hasFalling()){
+      return
+    }
+
+    const attempt = this.#fallingObject.rotateLeft()
+    if (this.hitsWall(attempt) || this.hitsBlock(attempt)){
+      let attemptLeft = this.#fallingObject.moveLeft().rotateLeft()
+      let attemptRight = this.#fallingObject.moveRight().rotateLeft()
+
+      if(!this.hitsWall(attemptLeft) && !this.hitsBlock(attemptLeft))
+        this.#fallingObject = attemptLeft
+      else if(!this.hitsWall(attemptRight) && !this.hitsBlock(attemptRight))
+        this.#fallingObject = attemptRight
+      else
+        return
+
+    }else{
+      this.#fallingObject = attempt
+    }
+  }
+
+  hitsFloor(attempt){
+    for(const block of attempt.nonEmptyBlocks()){
+      if (block.row >= this.height()){
         return true
       }
     }
     return false
+  }
+
+  hitsBlock(attempt){
+    for(const block of attempt.nonEmptyBlocks()){
+      if(this.#board[block.row][block.col] !== EMPTY){
+        return true
+      }
+    }
+  }
+
+  hitsWall(attempt){
+    for(const block of attempt.nonEmptyBlocks()){
+      if(block.col < 0 || block.col >= this.width()){
+        return true
+      }
+    }
+    return false
+  }
+
+  stopFalling(){
+    for(let row = 0; row < this.height();row++){
+      for(let col = 0; col < this.width();col++){
+        this.#board[row][col] = this.blockAt(row,col)
+      }
+    }
+    this.#fallingObject = null
+  }
+
+  hasFalling(){
+    return this.#fallingObject !== null
+  }
+
+  toString() {
+    return shapeToStr(this);
   }
 }

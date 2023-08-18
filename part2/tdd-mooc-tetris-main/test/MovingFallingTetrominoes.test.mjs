@@ -15,6 +15,7 @@ function hitLeftWall(board){
   }
 }
 
+
 describe('Moving tetromino in the board', () => {
   let board;
   beforeEach(() => {
@@ -76,10 +77,7 @@ describe('Moving tetromino in the board', () => {
 
   it('it can be moved down', () => {
     board.drop(Tetromino.T_SHAPE);
-    for(let i = 0; i < board.height(); i++){
-      board.moveDown()
-    }
-
+    board.moveDown()
     expect(board.toString()).to.equalShape(
       `..........
        ..........
