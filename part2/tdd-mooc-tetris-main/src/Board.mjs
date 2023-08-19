@@ -31,6 +31,20 @@ class MovableBlock{
     return this.#shape
   }
 
+  emptyRowAtDrop(){
+    let emptyRow = 0
+    for (let row = this.#row; row < this.#row + this.#shape.height(); row++){
+      for (let col = this.#col; col < this.#col + this.#shape.width(); col++){
+        const block = this.blockAt(row, col)
+        if (block !== EMPTY){
+          return emptyRow
+        }
+      }
+      emptyRow += 1
+    }
+    return
+  }
+
   nonEmptyBlocks(){
     let points = []
     for (let row = this.#row; row < this.#row + this.#shape.height(); row++){
@@ -112,16 +126,26 @@ export class Board{
     return this.#board[row][col]
   }
 
+  #initializeBlock(piece){
+    this.#fallingObject = new MovableBlock(
+      piece,
+      0,
+      Math.floor((this.#width - piece.width()) / 2)
+    )
+  }
+
   drop(piece){
+
     if (typeof piece === "string") {
       return
     }
     if (this.#fallingObject) {
       throw new Error("another piece is already falling")
     }
+    this.#initializeBlock(piece)
     this.#fallingObject = new MovableBlock(
       piece,
-      0,
+      -this.#fallingObject.emptyRowAtDrop(),
       Math.floor((this.#width - piece.width()) / 2)
     )
   }
@@ -177,17 +201,11 @@ export class Board{
     }
 
     const attempt = this.#fallingObject.rotateRight()
-    if (this.hitsWall(attempt) || this.hitsBlock(attempt)){
+    if (this.hitsWall(attempt) || this.hitsBlock(attempt) || this.hitsFloor(attempt)){
       let attemptLeft = this.#fallingObject.moveLeft().rotateRight()
       let attemptRight = this.#fallingObject.moveRight().rotateRight()
-
-      if(!this.hitsWall(attemptLeft) && !this.hitsBlock(attemptLeft))
-        this.#fallingObject = attemptLeft
-      else if(!this.hitsWall(attemptRight) && !this.hitsBlock(attemptRight))
-        this.#fallingObject = attemptRight
-      else
-        return
-
+      let attemptDown = this.#fallingObject.moveDown().rotateRight()
+      this.#attempts(attemptLeft, attemptRight, attemptDown)
     }else{
       this.#fallingObject = attempt
     }
@@ -199,17 +217,11 @@ export class Board{
     }
 
     const attempt = this.#fallingObject.rotateLeft()
-    if (this.hitsWall(attempt) || this.hitsBlock(attempt)){
+    if (this.hitsWall(attempt) || this.hitsBlock(attempt) || this.hitsFloor(attempt)){
       let attemptLeft = this.#fallingObject.moveLeft().rotateLeft()
       let attemptRight = this.#fallingObject.moveRight().rotateLeft()
-
-      if(!this.hitsWall(attemptLeft) && !this.hitsBlock(attemptLeft))
-        this.#fallingObject = attemptLeft
-      else if(!this.hitsWall(attemptRight) && !this.hitsBlock(attemptRight))
-        this.#fallingObject = attemptRight
-      else
-        return
-
+      let attemptDown = this.#fallingObject.moveDown().rotateLeft()
+      this.#attempts(attemptLeft, attemptRight, attemptDown)
     }else{
       this.#fallingObject = attempt
     }
@@ -217,7 +229,7 @@ export class Board{
 
   hitsFloor(attempt){
     for(const block of attempt.nonEmptyBlocks()){
-      if (block.row >= this.height()){
+      if (block.row < 0 || block.row >= this.height()){
         return true
       }
     }
@@ -226,6 +238,9 @@ export class Board{
 
   hitsBlock(attempt){
     for(const block of attempt.nonEmptyBlocks()){
+      if (block.row < 0){
+        continue
+      }
       if(this.#board[block.row][block.col] !== EMPTY){
         return true
       }
@@ -256,5 +271,18 @@ export class Board{
 
   toString() {
     return shapeToStr(this);
+  }
+
+  #attempts(attemptLeft, attemptRight, attemptDown){
+    
+    if(!this.hitsWall(attemptLeft) && !this.hitsBlock(attemptLeft) && !this.hitsFloor(attemptLeft))
+      this.#fallingObject = attemptLeft
+    else if(!this.hitsWall(attemptRight) && !this.hitsBlock(attemptRight) &&!this.hitsFloor(attemptRight))
+      this.#fallingObject = attemptRight
+    else if(!this.hitsWall(attemptDown) && !this.hitsBlock(attemptDown) && !this.hitsFloor(attemptDown)){
+      this.#fallingObject = attemptDown
+    }
+    else
+      return
   }
 }

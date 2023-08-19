@@ -4,9 +4,9 @@ export class Tetromino{
   static T_SHAPE = new Tetromino(
     0, 
     4, 
-     `.T.
+     `...
       TTT
-      ...`
+      .T.`
     )
   static I_SHAPE = new Tetromino(
     0, 
@@ -24,6 +24,38 @@ export class Tetromino{
       .OO
       ...`
     )
+  
+  static Z_SHAPE = new Tetromino(
+    0,
+    2,
+    `...
+     ZZ.
+     .ZZ`
+  )
+
+  static S_SHAPE = new Tetromino(
+    0,
+    2,
+    `...
+     .SS
+     SS.`
+  )
+  
+  static L_SHAPE = new Tetromino(
+    0,
+    4,
+    `...
+     LLL
+     L..`
+  )
+
+  static J_SHAPE = new Tetromino(
+    0,
+    4,
+    `...
+     JJJ
+     ..J`
+  )
 
   #currentOrientation
   #orientations
