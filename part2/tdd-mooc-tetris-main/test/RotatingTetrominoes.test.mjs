@@ -143,7 +143,6 @@ describe("The Z shape", () => {
   });
 
   it("can be rotated left", () => {
-    console.log(shape.rotateLeft().toString())
     expect(shape.rotateLeft().toString()).to.equalShape(
       `.Z.
        ZZ.
@@ -178,7 +177,6 @@ describe("The S shape", () => {
   });
 
   it("can be rotated left", () => {
-    console.log(shape.rotateLeft().toString())
     expect(shape.rotateLeft().toString()).to.equalShape(
       `S..
        SS.

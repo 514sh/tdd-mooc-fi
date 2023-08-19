@@ -98,11 +98,30 @@ export class Board{
   #height
   #width
   #fallingObject
+  #subscribers
   constructor(width, height){
     this.#height = height
     this.#width = width
     this.#board = createBlankArray(height, width, EMPTY)
     this.#fallingObject = null
+    this.#subscribers = []
+  }
+
+  subscribers(){
+    return this.#subscribers
+  }
+
+  addSubscriber(subscriber){
+    this.#subscribers.push(subscriber)
+    return true
+  }
+
+  updateSubscribers(){
+    const clearedRows = this.clearedRows()
+    for(const subscriber of this.#subscribers){
+      subscriber.addToScore(clearedRows.length)
+    }
+    return true
   }
 
   height(){
@@ -257,6 +276,15 @@ export class Board{
     return false
   }
 
+  stopFalling(){
+    for(let row = 0; row < this.height();row++){
+      for(let col = 0; col < this.width();col++){
+        this.#board[row][col] = this.blockAt(row,col)
+      }
+    }
+    this.#fallingObject = null
+  }
+
   clearedRows(){
     let rows = []
     for (let row = 0; row < this.height(); row++){
@@ -273,21 +301,11 @@ export class Board{
     return rows
   }
 
-  stopFalling(){
-    for(let row = 0; row < this.height();row++){
-      for(let col = 0; col < this.width();col++){
-        this.#board[row][col] = this.blockAt(row,col)
-      }
-    }
-    this.#fallingObject = null
-  }
-
-
   updateBoard(){
     const clearedRows =this.clearedRows()
     const unclearedRows = []
-
     if (clearedRows.length > 0){
+      this.updateSubscribers()
       for(let row = 0; row < this.height(); row++){
         if(clearedRows.includes(row)){
           continue
