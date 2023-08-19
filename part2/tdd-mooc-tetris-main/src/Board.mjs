@@ -158,6 +158,7 @@ export class Board{
     const attempt = this.#fallingObject.moveDown()
     if(this.hitsFloor(attempt) || this.hitsBlock(attempt)){
       this.stopFalling()
+      this.updateBoard()
     }else{
       this.#fallingObject = this.#fallingObject.moveDown()
     }
@@ -256,6 +257,22 @@ export class Board{
     return false
   }
 
+  clearedRows(){
+    let rows = []
+    for (let row = 0; row < this.height(); row++){
+      let counter = 0
+      for(let col = 0; col < this.width();col ++){
+        if(this.#board[row][col] !== EMPTY){
+          counter += 1
+        }
+      }
+      if (counter >= this.width()){
+        rows.push(row)
+      }
+    }
+    return rows
+  }
+
   stopFalling(){
     for(let row = 0; row < this.height();row++){
       for(let col = 0; col < this.width();col++){
@@ -263,6 +280,26 @@ export class Board{
       }
     }
     this.#fallingObject = null
+  }
+
+
+  updateBoard(){
+    const clearedRows =this.clearedRows()
+    const unclearedRows = []
+
+    if (clearedRows.length > 0){
+      for(let row = 0; row < this.height(); row++){
+        if(clearedRows.includes(row)){
+          continue
+        }
+        unclearedRows.push(this.#board[row])
+      }
+
+      let newBoard = createBlankArray(clearedRows.length, this.width(), EMPTY)
+      
+      this.#board = newBoard.concat(unclearedRows)      
+    }
+    return
   }
 
   hasFalling(){
