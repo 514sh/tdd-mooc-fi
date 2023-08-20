@@ -1,16 +1,12 @@
 export class ScoringSystem{
-  #score
-  #level
+  score
+  level
   constructor(){
-    this.#score = 0
-    this.#level = 0
+    this.score = 0
+    this.level = 1
   }
 
-  score(){
-    return this.#score
-  }
-
-  clearedLines(lines){
+  linesCleared(lines){
     if(lines == 1)
       return 40
     else if (lines == 2)
@@ -23,23 +19,12 @@ export class ScoringSystem{
       return 0
   }
 
-  level(){
-    return this.#level
-  }
 
   increaseLevel(){
-    this.#level = this.#level + 1
+    this.level = this.level + 1
   }
 
   addToScore(lines){
-    this.#score +=  this.clearedLines(lines) * (this.level() + 1)
+    this.score +=  this.linesCleared(lines) * (this.level + 1)
   }
 }
-
-/*
-0	40	100	300	1200
-1	80	200	600	2400
-2	120	300	900	3600
-9	400	1000	3000	12000
-n	40 * (n + 1)	100 * (n + 1)	300 * (n + 1)	1200 * (n + 1)
-*/

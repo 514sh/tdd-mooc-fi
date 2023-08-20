@@ -3,7 +3,7 @@ import { shapeToStr, createBlankArray} from "./shapes.mjs"
 const EMPTY = "."
 
 class Point{
-  constructor(row, col){
+constructor(row, col){
     this.row = row
     this.col = col
   }
@@ -99,12 +99,14 @@ export class Board{
   #width
   #fallingObject
   #subscribers
+  #linesCleared
   constructor(width, height){
     this.#height = height
     this.#width = width
     this.#board = createBlankArray(height, width, EMPTY)
     this.#fallingObject = null
     this.#subscribers = []
+    this.#linesCleared = 0
   }
 
   subscribers(){
@@ -117,11 +119,10 @@ export class Board{
   }
 
   updateSubscribers(){
-    const clearedRows = this.clearedRows()
     for(const subscriber of this.#subscribers){
-      subscriber.addToScore(clearedRows.length)
+      subscriber.addToScore(this.#linesCleared)
     }
-    return true
+    console.log("im called")
   }
 
   height(){
@@ -178,8 +179,10 @@ export class Board{
     if(this.hitsFloor(attempt) || this.hitsBlock(attempt)){
       this.stopFalling()
       this.updateBoard()
+      this.updateSubscribers()
     }else{
       this.#fallingObject = this.#fallingObject.moveDown()
+      this.linesCleared = 0
     }
   }
 
@@ -305,7 +308,7 @@ export class Board{
     const clearedRows =this.clearedRows()
     const unclearedRows = []
     if (clearedRows.length > 0){
-      this.updateSubscribers()
+      this.#linesCleared = clearedRows.length
       for(let row = 0; row < this.height(); row++){
         if(clearedRows.includes(row)){
           continue

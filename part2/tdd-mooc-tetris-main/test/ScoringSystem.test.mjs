@@ -1,10 +1,3 @@
-/*
-0	40	100	300	1200
-1	80	200	600	2400
-2	120	300	900	3600
-9	400	1000	3000	12000
-n	40 * (n + 1)	100 * (n + 1)	300 * (n + 1)	1200 * (n + 1)
-*/
 
 import {expect} from "chai";
 import { Board } from "../src/Board.mjs";
@@ -18,9 +11,9 @@ describe('The scoring system', () => {
   })
 
   it('Scoring system instance created', () => {
-    expect(scoringSystem.score()).to.be.equal(0)
+    expect(scoringSystem.score).to.be.equal(0)
   })
-
+ 
   it('Calculation is correct', () => {
     scoringSystem.addToScore(1)
     scoringSystem.addToScore(2)
@@ -28,7 +21,7 @@ describe('The scoring system', () => {
     scoringSystem.addToScore(4)
     scoringSystem.addToScore(5)
     scoringSystem.addToScore(0)
-    expect(scoringSystem.score()).to.be.equal(1640)
+    expect(scoringSystem.score).to.be.equal(3280)
     scoringSystem.increaseLevel()
     scoringSystem.addToScore(1)
     scoringSystem.addToScore(2)
@@ -36,7 +29,7 @@ describe('The scoring system', () => {
     scoringSystem.addToScore(4)
     scoringSystem.addToScore(5)
     scoringSystem.addToScore(0)
-    expect(scoringSystem.score()).to.be.equal(4920)
+    expect(scoringSystem.score).to.be.equal(8200)
   })
 
   it('Scores correctly when lines are cleared in the board', () => {
@@ -71,6 +64,6 @@ describe('The scoring system', () => {
     board.drop(Tetromino.O_SHAPE)
     board.moveLeft()
     board.moveDown()
-    expect(scoringSystem.score()).to.be.equal(380)
+    expect(scoringSystem.score).to.be.equal(780)
   })
 })

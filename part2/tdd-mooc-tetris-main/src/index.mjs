@@ -16,9 +16,9 @@ function initGame() {
   };
   game.scoring = new ScoringSystem();
   game.board = new Board(game.columns, game.rows);
-  game.board.onClearLine = (lineCount) => {
-    game.scoring.linesCleared(lineCount);
-  };
+  game.board.addSubscriber(game.scoring)
+  game.board.tick()
+  
   game.tetrominoes = new ShuffleBag([
     Tetromino.I_SHAPE,
     Tetromino.T_SHAPE,
@@ -32,9 +32,9 @@ function initGame() {
 
   document.addEventListener("keydown", (event) => {
     if (event.code === "Space") {
-      for (let i = 0; i < game.rows; i++) {
+      // for (let i = 0; i < game.rows; i++) {
         game.board.moveDown();
-      }
+      // }
     } else if (event.key === "z") {
       game.board.rotateLeft();
     } else if (event.key === "x") {
@@ -42,7 +42,7 @@ function initGame() {
     } else if (event.code === "ArrowUp") {
       game.board.rotateRight();
     } else if (event.code === "ArrowDown") {
-      game.board.moveDown();
+      game.board.tick();
     } else if (event.code === "ArrowLeft") {
       game.board.moveLeft();
     } else if (event.code === "ArrowRight") {
@@ -111,7 +111,7 @@ function renderGame(game, canvas, timestamp) {
   drawBackground(ctx, canvasWidth, canvasHeight);
   for (let row = 0; row < game.rows; row++) {
     for (let column = 0; column < game.columns; column++) {
-      const cell = game.board.cellAt(row, column);
+      const cell = game.board.blockAt(row, column);
       drawCell(ctx, { cell, row, column, cellWidth, cellHeight });
     }
   }
