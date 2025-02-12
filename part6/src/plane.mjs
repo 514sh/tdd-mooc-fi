@@ -100,4 +100,9 @@ export class Plane{
         }
         return false;
     }
+
+
+    print(){
+        return this.currentState().join("\n");
+    }
 }

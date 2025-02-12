@@ -22,6 +22,7 @@
     "test": "vitest run",
     "autotest": "vitest watch",
     "format": "prettier --write .",
-    "coverage": "c8 npm run test"
+    "coverage": "c8 npm run test",
+    "start": "node src/main.mjs"
   }
 }
