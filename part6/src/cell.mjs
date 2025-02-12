@@ -7,18 +7,18 @@ export class Cell{
     this.#aliveNeighbor = aliveNeighbor
   }
 
-  next(){
+  next(newAliveNeighbor){
     if(this.#ifAlive){
       if(this.#aliveNeighbor === 2 || this.#aliveNeighbor === 3){
-        return new Cell(true, this.#aliveNeighbor)
+        return new Cell(true, newAliveNeighbor)
       }else{
-        return new Cell(false, 2);
+        return new Cell(false, newAliveNeighbor);
       }
     }
     if(this.#aliveNeighbor === 3){
-      return new Cell(true, this.#aliveNeighbor)
+      return new Cell(true, newAliveNeighbor)
     }
-    return new Cell(false, this.#aliveNeighbor);
+    return new Cell(false, newAliveNeighbor);
   }
 
   ifAlive(){
