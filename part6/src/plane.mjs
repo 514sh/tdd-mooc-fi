@@ -2,9 +2,15 @@ import { Cell } from "./cell.mjs";
 
 export class Plane{
     #state;
+    #bornCount;
 
-    constructor(state){
+    constructor(state, bornCount){
         this.#state = state
+        if (bornCount && bornCount > 0){
+            this.#bornCount = bornCount;
+        }else{
+            this.#bornCount = 0;
+        }
     }
 
     stringToCell(ifAlive, aliveNeighbor){
@@ -26,22 +32,20 @@ export class Plane{
 
     next(){
         let nextCells = [];
+        let bornCount = 0;
         for(let row = 0; row < this.#rows(); row++){
             let newRow = "";
             for(let col = 0; col < this.#cols(); col++){
                 const newCell = this.stringToCell(this.stateInPlace(row, col), this.countAlive(row, col))
+                if (newCell.born()){
+                    bornCount++;
+                }
                 const newCellStr = this.cellToString(newCell.next());
                 newRow = newRow + newCellStr;
             }
             nextCells = nextCells.concat(newRow);
         }
-        return new Plane(nextCells);
-        /**
-         *  string to Cell
-         *  neighbors count
-         *  build cells
-         *  cell to string
-         */
+        return new Plane(nextCells, bornCount);
     }
 
     aliveNeighbors(){
@@ -84,6 +88,10 @@ export class Plane{
 
     currentState(){
         return this.#state;
+    }
+
+    getBornCount(){
+        return this.#bornCount;
     }
 
     #ifAlive(value){

@@ -30,4 +30,12 @@ describe("Test cell", () => {
     const newCell = cell.next()
     expect(newCell.ifAlive()).to.equal(true);
   });
+
+  test("I know if i will born on the next step", () => {
+    const neighbors = [0,1,2,3,4,]
+    const ifnewBorn = neighbors.map(neighbor => new Cell(false, neighbor).born())
+    const ifReBorn = neighbors.map(neighbor => new Cell(true, neighbor).born())
+    expect(ifnewBorn).to.deep.equal([false,false,false,true,false]);
+    expect(ifReBorn).to.deep.equal([false,false,false,false,false]);
+  })
 });

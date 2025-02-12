@@ -28,4 +28,11 @@ export class Cell{
   aliveNeighbors(){
     return this.#aliveNeighbor;
   }
+
+  born(){
+    if (!this.#ifAlive && this.next().ifAlive()){
+      return true;
+    }
+    return false;
+  }
 }

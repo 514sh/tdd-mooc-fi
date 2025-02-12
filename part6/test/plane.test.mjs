@@ -37,6 +37,10 @@ describe("test plane", () => {
         const nextPlane = plane.next();
         expect(nextPlane.currentState()).to.deep.equal(expectedNextState);
         expect(nextPlane.next().currentState()).to.deep.equal(state);
+
+        expect(plane.getBornCount()).to.equal(0);
+        expect(nextPlane.getBornCount()).to.equal(2);
+        expect(nextPlane.next().getBornCount()).to.equal(2);
     })
 
     test("test Glider: I know my next state", () => {
@@ -77,6 +81,12 @@ describe("test plane", () => {
         expect(plane.next().next().currentState()).to.deep.equal(state[2]);
         expect(plane.next().next().next().currentState()).to.deep.equal(state[3]);
         expect(plane.next().next().next().next().currentState()).to.deep.equal(state[4]);
+
+        expect(plane.next().getBornCount()).to.deep.equal(2);
+        expect(plane.next().next().getBornCount()).to.deep.equal(2);
+        expect(plane.next().next().next().getBornCount()).to.deep.equal(2);
+        expect(plane.next().next().next().next().getBornCount()).to.deep.equal(2);
+
     })
 
     test("test Block: I know my next state", () => {
@@ -90,5 +100,9 @@ describe("test plane", () => {
         const nextPlane = plane.next();
         expect(nextPlane.currentState()).to.deep.equal(state);
         expect(nextPlane.next().currentState()).to.deep.equal(state);
+
+        expect(nextPlane.getBornCount()).to.deep.equal(0);
+        expect(nextPlane.next().getBornCount()).to.deep.equal(0);
+        expect(nextPlane.next().next().getBornCount()).to.deep.equal(0);
     })
 })
