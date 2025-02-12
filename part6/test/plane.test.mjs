@@ -2,7 +2,7 @@ import { describe, test } from "vitest";
 import { expect } from "chai";
 import { Plane } from "../src/Plane.mjs";
 
-describe("test plane in 4x4", () => {
+describe("test plane", () => {
     test("I can count my neighbors", () => {
         const state = [
             "....",
@@ -20,7 +20,7 @@ describe("test plane in 4x4", () => {
         expect(plane.aliveNeighbors()).to.deep.equal(expectedAliveNeighborsCount);
     })
 
-    test("Blinker: I know my next state", () => {
+    test("test Blinker: I know my next state", () => {
         const state = [
             "....",
             ".xxx",
@@ -37,5 +37,45 @@ describe("test plane in 4x4", () => {
         const nextPlane = plane.next();
         expect(nextPlane.currentState()).to.deep.equal(expectedNextState);
         expect(nextPlane.next().currentState()).to.deep.equal(state);
+    })
+
+    test("test Glider: I know my next state", () => {
+        const state = [
+            [
+                "..x.", 
+                "x.x.", 
+                ".xx.", 
+                "....", 
+            ],
+            [
+                ".x..",
+                "..xx",
+                ".xx.",
+                "....",
+            ],
+            [
+                "..x.",
+                "...x",
+                ".xxx",
+                "...."
+            ],
+            [
+                "....",
+                ".x.x",
+                "..xx",
+                "..x."
+            ],
+            [
+                "....",
+                "...x", 
+                ".x.x", 
+                "..xx", 
+            ],
+        ]
+        const plane = new Plane(state[0]);
+        expect(plane.next().currentState()).to.deep.equal(state[1]);
+        expect(plane.next().next().currentState()).to.deep.equal(state[2]);
+        expect(plane.next().next().next().currentState()).to.deep.equal(state[3]);
+        expect(plane.next().next().next().next().currentState()).to.deep.equal(state[4]);
     })
 })
