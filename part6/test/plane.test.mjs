@@ -78,4 +78,17 @@ describe("test plane", () => {
         expect(plane.next().next().next().currentState()).to.deep.equal(state[3]);
         expect(plane.next().next().next().next().currentState()).to.deep.equal(state[4]);
     })
+
+    test("test Block: I know my next state", () => {
+        const state = [
+            "....",
+            ".xx.",
+            ".xx.",
+            "....",
+        ]
+        const plane = new Plane(state);
+        const nextPlane = plane.next();
+        expect(nextPlane.currentState()).to.deep.equal(state);
+        expect(nextPlane.next().currentState()).to.deep.equal(state);
+    })
 })
